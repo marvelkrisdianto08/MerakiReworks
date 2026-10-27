@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Meraki Reworks — Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rose:#C9748A;--rose-light:#F2D9DF;--rose-deep:#8B4A5C;
+  --sage:#7A9E8E;--sage-light:#D6E9E2;
+  --cream:#FAF6F1;--ink:#2C2320;--warm-gray:#6B6560;
+  --gold:#C49A5A;--gold-light:#F5E9D4;
+  --border:rgba(44,35,32,0.1);--card:#fff;
+  --shadow:0 2px 16px rgba(44,35,32,0.08);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+/* NAV */
+nav{background:var(--ink);padding:0 32px;display:flex;justify-content:space-between;align-items:center;height:62px;position:sticky;top:0;z-index:200;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--rose-light);letter-spacing:.5px;text-decoration:none;}
+.nav-links{display:flex;gap:4px;}
+.nav-link{color:#9E9690;text-decoration:none;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:20px;transition:all .2s;}
+.nav-link:hover,.nav-link.active{color:#fff;background:rgba(255,255,255,0.1);}
+.nav-link.ext{color:var(--rose-light);border:1px solid rgba(201,116,138,0.4);}
+.nav-link.ext:hover{background:var(--rose);border-color:var(--rose);color:#fff;}
+.cart-btn{position:relative;background:var(--rose);color:#fff;border:none;padding:8px 18px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.cart-btn:hover{background:var(--rose-deep);}
+.cart-count{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--rose-deep);border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;}
+
+/* HERO */
+.hero{background:var(--ink);padding:72px 32px 56px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 120%, rgba(201,116,138,0.18) 0%, transparent 70%);}
+.hero-tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--rose);margin-bottom:16px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,6vw,64px);color:#fff;line-height:1.1;margin-bottom:16px;}
+.hero-title em{font-style:italic;color:var(--rose-light);}
+.hero-sub{font-size:14px;color:#9E9690;max-width:420px;margin:0 auto 28px;line-height:1.7;}
+.hero-cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-primary{background:var(--rose);color:#fff;border:none;padding:12px 28px;border-radius:24px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.btn-primary:hover{background:var(--rose-deep);}
+.btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.3);padding:12px 28px;border-radius:24px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,0.08);}
+
+/* FILTERS */
+.filters{padding:20px 32px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.filter-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--warm-gray);}
+.filter-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;color:var(--warm-gray);transition:all .2s;}
+.filter-btn.active{background:var(--rose);border-color:var(--rose);color:#fff;}
+.filter-btn:hover:not(.active){border-color:var(--rose);color:var(--rose);}
+.search-box{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--border);border-radius:20px;padding:6px 14px;}
+.search-box input{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;width:160px;}
+.search-box input::placeholder{color:#9E9690;}
+
+/* PRODUCT GRID */
+.shop-section{padding:32px;}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.section-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);}
+.section-count{font-size:12px;color:var(--warm-gray);}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+.product-card{background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden;transition:all .25s;cursor:pointer;}
+.product-card:hover{box-shadow:var(--shadow);transform:translateY(-3px);}
+.product-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;}
+.product-img.dresses{background:#F9EFF2;}
+.product-img.tops{background:#FDF3F0;}
+.product-img.bottoms{background:#F0F4F9;}
+.product-img.outerwear{background:#F3F5F0;}
+.product-img.accessories{background:#FEF8EE;}
+.status-badge{position:absolute;top:10px;right:10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:10px;font-weight:500;}
+.badge-hot{background:var(--rose-light);color:var(--rose-deep);}
+.badge-low{background:#FCE8E8;color:#A32D2D;}
+.badge-sold{background:#F0F0F0;color:#888;}
+.badge-good{background:var(--sage-light);color:#2E6655;}
+.product-info{padding:16px;}
+.product-cat{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--warm-gray);margin-bottom:4px;}
+.product-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink);margin-bottom:6px;}
+.product-desc{font-size:11px;color:var(--warm-gray);line-height:1.5;margin-bottom:12px;}
+.product-footer{display:flex;justify-content:space-between;align-items:center;}
+.product-price{font-size:16px;font-weight:500;color:var(--ink);}
+.product-stock{font-size:10px;color:var(--warm-gray);}
+.add-cart{background:var(--rose);color:#fff;border:none;padding:7px 16px;border-radius:16px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;transition:all .2s;}
+.add-cart:hover{background:var(--rose-deep);}
+.add-cart:disabled{background:#ddd;cursor:not-allowed;}
+
+/* CART SIDEBAR */
+.cart-overlay{position:fixed;inset:0;background:rgba(44,35,32,0.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s;}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-sidebar{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--card);z-index:301;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.cart-sidebar.open{transform:translateX(0);}
+.cart-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.cart-head-title{font-family:'Playfair Display',serif;font-size:18px;}
+.cart-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--warm-gray);line-height:1;}
+.cart-items{flex:1;overflow-y:auto;padding:16px 24px;}
+.cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(44,35,32,.06);}
+.cart-item-img{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--cream);flex-shrink:0;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-size:13px;font-weight:500;color:var(--ink);}
+.cart-item-price{font-size:12px;color:var(--warm-gray);margin-top:2px;}
+.cart-item-remove{color:var(--rose);font-size:18px;cursor:pointer;background:none;border:none;line-height:1;}
+.cart-empty{text-align:center;padding:48px 24px;color:var(--warm-gray);}
+.cart-empty-icon{font-size:48px;display:block;margin-bottom:12px;}
+.cart-foot{padding:20px 24px;border-top:1px solid var(--border);}
+.cart-total{display:flex;justify-content:space-between;margin-bottom:16px;}
+.cart-total-label{font-size:14px;color:var(--warm-gray);}
+.cart-total-val{font-family:'Playfair Display',serif;font-size:20px;}
+.checkout-btn{width:100%;background:var(--rose);color:#fff;border:none;padding:14px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;font-weight:500;}
+.checkout-btn:hover{background:var(--rose-deep);}
+.checkout-btn:disabled{background:#ddd;cursor:not-allowed;}
+
+/* ORDER MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,35,32,0.55);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border-radius:18px;width:min(520px,95vw);max-height:90vh;overflow-y:auto;padding:32px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--warm-gray);margin-bottom:24px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.form-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-gray);}
+.form-input,.form-select,.form-textarea{border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:#fff;outline:none;transition:border .2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--rose);}
+.form-textarea{resize:vertical;min-height:72px;}
+.order-summary{background:var(--cream);border-radius:10px;padding:16px;margin-bottom:20px;}
+.order-summary-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--warm-gray);margin-bottom:10px;}
+.order-line{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;}
+.order-total-line{display:flex;justify-content:space-between;font-size:14px;font-weight:500;border-top:1px solid var(--border);padding-top:10px;margin-top:6px;}
+.modal-actions{display:flex;gap:10px;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);padding:12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--warm-gray);transition:all .2s;}
+.btn-cancel:hover{border-color:var(--warm-gray);}
+.btn-submit{flex:2;background:var(--rose);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;font-weight:500;transition:all .2s;}
+.btn-submit:hover{background:var(--rose-deep);}
+
+/* SUCCESS */
+.success-state{text-align:center;padding:24px 0;}
+.success-icon{font-size:56px;display:block;margin-bottom:16px;}
+.success-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);margin-bottom:8px;}
+.success-msg{font-size:13px;color:var(--warm-gray);margin-bottom:24px;line-height:1.6;}
+.success-id{display:inline-block;background:var(--rose-light);color:var(--rose-deep);padding:6px 18px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:20px;}
+
+/* CHATBOT */
+.chatbot-btn{position:fixed;bottom:28px;right:28px;width:56px;height:56px;border-radius:50%;background:var(--rose);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(201,116,138,0.45);display:flex;align-items:center;justify-content:center;font-size:24px;transition:all .3s;z-index:500;}
+.chatbot-btn:hover{background:var(--rose-deep);transform:scale(1.08);}
+.chatbot-window{position:fixed;bottom:96px;right:28px;width:340px;height:480px;background:var(--card);border-radius:18px;box-shadow:0 8px 40px rgba(44,35,32,0.18);display:flex;flex-direction:column;z-index:500;transform:scale(0.85) translateY(20px);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.4,0,.2,1);transform-origin:bottom right;}
+.chatbot-window.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+.chat-head{background:var(--ink);padding:14px 18px;border-radius:18px 18px 0 0;display:flex;align-items:center;gap:10px;}
+.chat-avatar{width:32px;height:32px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.chat-head-info{flex:1;}
+.chat-head-name{font-size:13px;color:#fff;font-weight:500;}
+.chat-head-status{font-size:10px;color:var(--sage);letter-spacing:.5px;}
+.chat-close{background:none;border:none;color:#9E9690;font-size:18px;cursor:pointer;line-height:1;}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:80%;animation:msgIn .2s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg-bot{align-self:flex-start;}
+.msg-user{align-self:flex-end;}
+.msg-bubble{padding:9px 13px;border-radius:14px;font-size:12px;line-height:1.55;}
+.msg-bot .msg-bubble{background:var(--cream);color:var(--ink);border-radius:4px 14px 14px 14px;}
+.msg-user .msg-bubble{background:var(--rose);color:#fff;border-radius:14px 14px 4px 14px;}
+.msg-time{font-size:9px;color:#9E9690;margin-top:3px;padding:0 4px;}
+.msg-user .msg-time{text-align:right;}
+.chat-suggestions{padding:0 16px 8px;display:flex;flex-wrap:wrap;gap:6px;}
+.suggestion{background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:5px 12px;font-size:11px;cursor:pointer;color:var(--warm-gray);transition:all .2s;}
+.suggestion:hover{border-color:var(--rose);color:var(--rose);}
+.chat-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:20px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;transition:border .2s;color:var(--ink);}
+.chat-input:focus{border-color:var(--rose);}
+.chat-send{background:var(--rose);color:#fff;border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;}
+.chat-send:hover{background:var(--rose-deep);}
+.typing{display:flex;gap:4px;align-items:center;padding:9px 13px;background:var(--cream);border-radius:4px 14px 14px 14px;width:fit-content;}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--warm-gray);animation:bounce .9s infinite;}
+.typing span:nth-child(2){animation-delay:.15s;}
+.typing span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 24px;border-radius:20px;font-size:13px;z-index:600;opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* FOOTER */
+footer{background:var(--ink);padding:32px;text-align:center;color:#9E9690;font-size:12px;margin-top:48px;}
+footer .footer-logo{font-family:'Playfair Display',serif;font-size:18px;color:var(--rose-light);margin-bottom:8px;}
+
+@media(max-width:768px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .hero{padding:48px 20px 40px;}
+  .filters{padding:14px 16px;}
+  .shop-section{padding:20px 16px;}
+  .product-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+  .cart-sidebar{width:100%;}
+  .chatbot-window{width:calc(100vw - 32px);right:16px;bottom:88px;}
+  .modal{padding:24px 20px;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="https://merakirework.com/index.html">Meraki Reworks</a>
+  <div class="nav-links">
+    <a class="nav-link active" href="https://merakirework.com/index.html">Shop</a>
+    <a class="nav-link" href="https://merakirework.com/login.html">CRM</a>
+    <a class="nav-link ext" href="https://merakirework.com/login.html">↗ Dashboard</a>
+  </div>
+  <button class="cart-btn" onclick="toggleCart()">🛍 Keranjang <span class="cart-count" id="cartCount">0</span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div style="position:relative;z-index:1;">
+    <p class="hero-tag">Preloved · Reworked · Sustainable</p>
+    <h1 class="hero-title">Fashion yang <em>bercerita</em><br/>hidup kembali</h1>
+    <p class="hero-sub">Setiap pakaian punya sejarah. Kami reworks menjadi sesuatu yang baru, unik, dan siap jadi ceritamu berikutnya.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Jelajahi Koleksi</button>
+      <button class="btn-outline" onclick="openChat()">💬 Tanya AI Stylist</button>
+    </div>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<div class="filters">
+  <span class="filter-label">Kategori:</span>
+  <button class="filter-btn active" onclick="filterProducts('all',this)">Semua</button>
+  <button class="filter-btn" onclick="filterProducts('Dresses',this)">Dresses</button>
+  <button class="filter-btn" onclick="filterProducts('Tops',this)">Tops</button>
+  <button class="filter-btn" onclick="filterProducts('Bottoms',this)">Bottoms</button>
+  <button class="filter-btn" onclick="filterProducts('Outerwear',this)">Outerwear</button>
+  <button class="filter-btn" onclick="filterProducts('Accessories',this)">Accessories</button>
+  <div class="search-box">
+    <span style="color:var(--warm-gray);font-size:14px;">🔍</span>
+    <input type="text" placeholder="Cari produk..." id="searchInput" oninput="renderProducts()"/>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="shop-section" id="shop">
+  <div class="section-header">
+    <h2 class="section-title">Koleksi Terkini</h2>
+    <span class="section-count" id="productCount"></span>
+  </div>
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-head">
+    <span class="cart-head-title">Keranjang Belanja</span>
+    <button class="cart-close" onclick="toggleCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="cart-total">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-val" id="cartTotal">Rp 0</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>Checkout →</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <div id="checkoutForm">
+      <h2 class="modal-title">Lengkapi Pesanan</h2>
+      <p class="modal-sub">Isi data di bawah untuk konfirmasi pesanan</p>
+      <div class="order-summary" id="orderSummaryBox"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" id="buyerName" placeholder="Nama kamu"/></div>
+        <div class="form-group"><label class="form-label">No. WhatsApp</label><input class="form-input" id="buyerPhone" placeholder="08xx"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="buyerEmail" type="email" placeholder="email@kamu.com"/></div>
+      <div class="form-group"><label class="form-label">Alamat Pengiriman</label><textarea class="form-textarea" id="buyerAddress" placeholder="Jalan, nomor, kota, kode pos..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Channel Pembelian</label>
+          <select class="form-select" id="buyerChannel">
+            <option>Instagram</option><option>Shopee</option><option>TikTok Shop</option><option>Walk-in</option><option>Website</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Catatan (opsional)</label><input class="form-input" id="buyerNotes" placeholder="Misal: ukuran, warna..."/></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeCheckout()">Batal</button>
+        <button class="btn-submit" onclick="submitOrder()">Pesan Sekarang ✓</button>
+      </div>
+    </div>
+    <div id="orderSuccess" class="success-state" style="display:none;">
+      <span class="success-icon">🎉</span>
+      <h2 class="success-title">Pesanan Berhasil!</h2>
+      <div class="success-id" id="successId"></div>
+      <p class="success-msg">Terima kasih sudah belanja di Meraki Reworks!<br/>Kami akan segera konfirmasi via WhatsApp/DM.</p>
+      <button class="btn-primary" onclick="closeCheckout()">Lanjut Belanja</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="chatbot-btn" id="chatbotBtn" onclick="openChat()" title="Chat dengan AI Stylist">✨</button>
+<div class="chatbot-window" id="chatbotWindow">
+  <div class="chat-head">
+    <div class="chat-avatar">✨</div>
+    <div class="chat-head-info">
+      <div class="chat-head-name">Meraki AI Stylist</div>
+      <div class="chat-head-status">● Online sekarang</div>
+    </div>
+    <button class="chat-close" onclick="closeChat()">×</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-suggestions" id="chatSuggestions"></div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Tanya soal style, ukuran, produk..." onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="footer-logo">Meraki Reworks</div>
+  <p>Preloved fashion yang direworked dengan cinta · Jakarta, Indonesia</p>
+  <p style="margin-top:8px;">© 2025 Meraki Reworks · All pieces one-of-a-kind</p>
+</footer>
+
+<script>
+// ── Load shared DB ──
+const MerakiDB = (() => {
+  const KEY_ORDERS='meraki_orders', KEY_CUSTOMERS='meraki_customers', KEY_PRODUCTS='meraki_products', KEY_CHATS='meraki_chats';
+  const DEFAULT_PRODUCTS=[
+    {id:'P001',name:'Floral Midi Dress Rework',category:'Dresses',price:65000,stock:1,image:'👗',status:'good',description:'Vintage floral fabric reworked into a modern midi silhouette. One-of-a-kind.',tags:['floral','midi','vintage']},
+    {id:'P002',name:'Oversized Blazer (Cream)',category:'Outerwear',price:89000,stock:1,image:'🧥',status:'good',description:'90s-era oversized blazer, tailored and cleaned to perfection.',tags:['blazer','oversized','90s']},
+    {id:'P003',name:'Y2K Babydoll Top Set',category:'Tops',price:38000,stock:1,image:'👚',status:'good',description:'Matching babydoll set dengan adjustable straps dan scallop trim.',tags:['y2k','babydoll','set']},
+    {id:'P004',name:'Wide-Leg Linen Trousers',category:'Bottoms',price:55000,stock:1,image:'👖',status:'good',description:'Breathable linen wide-legs dalam warm ecru. Perfect untuk Jakarta.',tags:['linen','wide-leg','breathable']},
+    {id:'P005',name:'Reworked Denim Corset',category:'Tops',price:72000,stock:1,image:'🎽',status:'good',description:'Deconstructed denim jacket reimagined sebagai structured corset top.',tags:['denim','corset','rework']},
+    {id:'P006',name:'Silk Scarf Headwrap',category:'Accessories',price:22000,stock:1,image:'🧣',status:'good',description:'100% silk vintage scarf — bisa dipakai sebagai headwrap, neck tie, atau bag accent.',tags:['silk','scarf','accessories']},
+    {id:'P007',name:'Mini Pleated Skirt',category:'Bottoms',price:45000,stock:1,image:'🩱',status:'good',description:'School-girl pleated mini dalam charcoal check. Pair dengan apa saja.',tags:['mini','pleated','check']},
+    {id:'P008',name:'Knit Cardigan (Dusty Rose)',category:'Tops',price:58000,stock:1,image:'🧶',status:'good',description:'Vintage knit cardi dalam dusty rose. Slightly oversized fit.',tags:['knit','cardigan','rose']},
+    {id:'P009',name:'90s Slip Dress',category:'Dresses',price:68000,stock:1,image:'👘',status:'good',description:'Bias-cut satin slip dress dalam champagne. Minimal, effortless.',tags:['slip','satin','90s']},
+    {id:'P010',name:'Cropped Leather Jacket',category:'Outerwear',price:125000,stock:1,image:'🥻',status:'good',description:'Genuine leather, professionally cleaned dan cropped. Timeless.',tags:['leather','jacket','cropped']},
+  ];
+  const DEFAULT_CUSTOMERS=[
+    {id:'C001',name:'Aisha Ramadhani',email:'aisha@email.com',phone:'081234567890',joinDate:'2024-01-15',totalOrders:8,totalSpend:548000,tier:'Gold',lastOrder:'2025-05-28',notes:'Prefers Y2K styles. Size S.',tags:['y2k','size-s']},
+    {id:'C002',name:'Rizky Amelia',email:'rizky@email.com',phone:'082345678901',joinDate:'2024-02-20',totalOrders:5,totalSpend:312000,tier:'Silver',lastOrder:'2025-06-01',notes:'Loves minimalist basics and linen.',tags:['minimalist','linen']},
+    {id:'C003',name:'Sari Dewi',email:'sari@email.com',phone:'083456789012',joinDate:'2024-03-10',totalOrders:12,totalSpend:892000,tier:'VIP',lastOrder:'2025-06-08',notes:'Top customer.',tags:['vip','regular']},
+    {id:'C004',name:'Nadia Putri',email:'nadia@email.com',phone:'084567890123',joinDate:'2024-04-05',totalOrders:3,totalSpend:178000,tier:'Bronze',lastOrder:'2025-05-28',notes:'Interested in outerwear.',tags:['outerwear']},
+    {id:'C005',name:'Citra Lestari',email:'citra@email.com',phone:'085678901234',joinDate:'2024-01-08',totalOrders:9,totalSpend:624000,tier:'Gold',lastOrder:'2025-06-05',notes:'Loves reworked pieces.',tags:['rework','advocate']},
+  ];
+  const DEFAULT_ORDERS=[
+    {id:'ORD-001',customerId:'C003',customerName:'Sari Dewi',date:'2025-06-08',items:[{productId:'P001',name:'Floral Midi Dress Rework',qty:1,price:65000},{productId:'P006',name:'Silk Scarf Headwrap',qty:2,price:22000}],total:109000,status:'delivered',channel:'Instagram',notes:'Gift wrap requested'},
+    {id:'ORD-002',customerId:'C001',customerName:'Aisha Ramadhani',date:'2025-06-07',items:[{productId:'P003',name:'Y2K Babydoll Top Set',qty:1,price:38000}],total:38000,status:'shipped',channel:'TikTok Shop',notes:''},
+    {id:'ORD-003',customerId:'C005',customerName:'Citra Lestari',date:'2025-06-05',items:[{productId:'P009',name:'90s Slip Dress',qty:1,price:68000},{productId:'P007',name:'Mini Pleated Skirt',qty:1,price:45000}],total:113000,status:'processing',channel:'Shopee',notes:''},
+    {id:'ORD-004',customerId:'C002',customerName:'Rizky Amelia',date:'2025-06-01',items:[{productId:'P004',name:'Wide-Leg Linen Trousers',qty:1,price:55000}],total:55000,status:'delivered',channel:'Instagram',notes:''},
+    {id:'ORD-005',customerId:'C004',customerName:'Nadia Putri',date:'2025-05-28',items:[{productId:'P002',name:'Oversized Blazer (Cream)',qty:1,price:89000}],total:89000,status:'delivered',channel:'Walk-in',notes:''},
+  ];
+  function load(k,def){try{const d=localStorage.getItem(k);return d?JSON.parse(d):def;}catch(e){return def;}}
+  function save(k,data){try{localStorage.setItem(k,JSON.stringify(data));return true;}catch(e){return false;}}
+  function init(){save(KEY_PRODUCTS,DEFAULT_PRODUCTS);if(!localStorage.getItem(KEY_CUSTOMERS))save(KEY_CUSTOMERS,DEFAULT_CUSTOMERS);if(!localStorage.getItem(KEY_ORDERS))save(KEY_ORDERS,DEFAULT_ORDERS);}
+  return{
+    init,
+    products:{getAll:()=>load(KEY_PRODUCTS,DEFAULT_PRODUCTS),save:(d)=>save(KEY_PRODUCTS,d)},
+    customers:{getAll:()=>load(KEY_CUSTOMERS,DEFAULT_CUSTOMERS),save:(d)=>save(KEY_CUSTOMERS,d)},
+    orders:{getAll:()=>load(KEY_ORDERS,DEFAULT_ORDERS),save:(d)=>save(KEY_ORDERS,d)},
+    addOrder(order){
+      const orders=this.orders.getAll();orders.unshift(order);this.orders.save(orders);
+      const customers=this.customers.getAll();
+      let ci=customers.findIndex(c=>c.email===order.customerEmail);
+      if(ci<0){
+        const newC={id:'C'+Date.now(),name:order.customerName,email:order.customerEmail||'',phone:order.customerPhone||'',joinDate:order.date,totalOrders:1,totalSpend:order.total,tier:'Bronze',lastOrder:order.date,notes:'',tags:[]};
+        customers.push(newC);
+      } else {
+        customers[ci].totalOrders++;customers[ci].totalSpend+=order.total;customers[ci].lastOrder=order.date;
+        const sp=customers[ci].totalSpend;customers[ci].tier=sp>=700000?'VIP':sp>=400000?'Gold':sp>=200000?'Silver':'Bronze';
+      }
+      this.customers.save(customers);
+      const products=this.products.getAll();
+      order.items.forEach(item=>{const pi=products.findIndex(p=>p.id===item.productId);if(pi>=0&&products[pi].stock>0){products[pi].stock=Math.max(0,products[pi].stock-item.qty);products[pi].status='good';}});
+      this.products.save(products);
+    }
+  };
+})();
+MerakiDB.init();
+
+// ── State ──
+let cart=[], currentFilter='all', products=[];
+
+function fmt(n){return'Rp '+n.toLocaleString('id-ID');}
+function fmtDate(){return new Date().toISOString().split('T')[0];}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ── Products ──
+function renderProducts(){
+  products=MerakiDB.products.getAll();
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const filtered=products.filter(p=>{
+    const catOk=currentFilter==='all'||p.category===currentFilter;
+    const qOk=!q||p.name.toLowerCase().includes(q)||p.tags.some(t=>t.includes(q));
+    return catOk&&qOk;
+  });
+  document.getElementById('productCount').textContent=filtered.length+' produk';
+  const grid=document.getElementById('productGrid');
+  if(!filtered.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--warm-gray);"><span style="font-size:40px;">🔍</span><p style="margin-top:12px;">Produk tidak ditemukan</p></div>';return;}
+  grid.innerHTML=filtered.map(p=>{
+    const catClass=p.category.toLowerCase();
+    const badgeMap={hot:'badge-hot',low:'badge-low',sold:'badge-sold',good:'badge-good'};
+    const badgeLbl={hot:'Tersedia',low:'Tersedia',sold:'Tersedia',good:'Tersedia'};
+    const inCart=cart.some(c=>c.id===p.id);
+    return`<div class="product-card" onclick="quickView('${p.id}')">
+      <div class="product-img ${catClass}">
+        ${p.image}
+        <span class="status-badge ${badgeMap[p.status]||'badge-good'}">${badgeLbl[p.status]||''}</span>
+      </div>
+      <div class="product-info">
+        <div class="product-cat">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.description}</div>
+        <div class="product-footer">
+          <div><div class="product-price">${fmt(p.price)}</div><div class="product-stock">${p.stock>0?'Stok: '+p.stock:'Habis'}</div></div>
+          <button class="add-cart" ${p.stock===0||inCart?'disabled':''} onclick="event.stopPropagation();addToCart('${p.id}')">${p.stock===0?'Habis':inCart?'✓ Added':'+ Keranjang'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProducts(cat, btn){
+  currentFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts();
+}
+
+function addToCart(pid){
+  const p=products.find(x=>x.id===pid);
+  if(!p||p.stock===0)return;
+  if(!cart.some(c=>c.id===pid)){cart.push({...p,qty:1});}
+  updateCart();renderProducts();
+  showToast(p.name+' ditambahkan ke keranjang 🛍');
+}
+
+function removeFromCart(pid){cart=cart.filter(c=>c.id!==pid);updateCart();renderProducts();}
+
+function updateCart(){
+  const count=cart.length;
+  document.getElementById('cartCount').textContent=count;
+  document.getElementById('checkoutBtn').disabled=count===0;
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('cartTotal').textContent=fmt(total);
+  const container=document.getElementById('cartItems');
+  if(!count){container.innerHTML='<div class="cart-empty"><span class="cart-empty-icon">🛍</span><p>Keranjang masih kosong.<br/>Yuk pilih sesuatu!</p></div>';return;}
+  container.innerHTML=cart.map(c=>`
+    <div class="cart-item">
+      <div class="cart-item-img">${c.image}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-price">${fmt(c.price)}</div>
+      </div>
+      <button class="cart-item-remove" onclick="removeFromCart('${c.id}')">×</button>
+    </div>`).join('');
+}
+
+function toggleCart(){
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('cartOverlay').classList.toggle('open');
+}
+
+function quickView(pid){
+  const p=products.find(x=>x.id===pid);
+  if(!p)return;
+  addToCart(pid);
+  toggleCart();
+}
+
+// ── Checkout ──
+function openCheckout(){
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('orderSummaryBox').innerHTML=`
+    <div class="order-summary-title">Ringkasan Pesanan</div>
+    ${cart.map(c=>`<div class="order-line"><span>${c.image} ${c.name}</span><span>${fmt(c.price)}</span></div>`).join('')}
+    <div class="order-total-line"><span>Total</span><span>${fmt(total)}</span></div>`;
+  document.getElementById('checkoutForm').style.display='block';
+  document.getElementById('orderSuccess').style.display='none';
+  document.getElementById('checkoutModal').classList.add('open');
+  toggleCart();
+}
+function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open');}
+
+function submitOrder(){
+  const name=document.getElementById('buyerName').value.trim();
+  const phone=document.getElementById('buyerPhone').value.trim();
+  const email=document.getElementById('buyerEmail').value.trim();
+  const address=document.getElementById('buyerAddress').value.trim();
+  if(!name||!phone||!address){showToast('Lengkapi semua field yang wajib diisi');return;}
+  const orderId='ORD-'+Date.now();
+  const order={
+    id:orderId,
+    customerName:name,customerPhone:phone,customerEmail:email,customerAddress:address,
+    date:fmtDate(),
+    items:cart.map(c=>({productId:c.id,name:c.name,qty:c.qty,price:c.price})),
+    total:cart.reduce((s,c)=>s+c.price*c.qty,0),
+    status:'processing',
+    channel:document.getElementById('buyerChannel').value,
+    notes:document.getElementById('buyerNotes').value
+  };
+  MerakiDB.addOrder(order);
+  document.getElementById('successId').textContent=orderId;
+  document.getElementById('checkoutForm').style.display='none';
+  document.getElementById('orderSuccess').style.display='block';
+  cart=[];updateCart();renderProducts();
+}
+
+// ══════════════════════════════════════
+// AI CHATBOT
+// ══════════════════════════════════════
+let chatOpen=false;
+const suggestions=['Apa yang lagi trending?','Rekomendasiin dress dong','Ada diskon?','Cara order gimana?','Ukuran tersedia apa?'];
+
+const botKnowledge={
+  greet:['Halo! Aku Meraki AI Stylist ✨ Aku bisa bantu kamu temukan fashion preloved yang pas buat kamu. Mau cari apa hari ini?'],
+  trending:()=>{
+    const prods=MerakiDB.products.getAll().filter(p=>p.status==='hot');
+    return`Sekarang yang lagi 🔥 hot di Meraki:\n${prods.map(p=>`• ${p.image} ${p.name} — ${fmt(p.price)}`).join('\n')}\n\nMau lihat detail salah satunya?`;
+  },
+  stock:()=>{
+    const prods=MerakiDB.products.getAll().filter(p=>p.stock>0);
+    return`Saat ini ada ${prods.length} produk tersedia. Beberapa favorit:\n${prods.slice(0,4).map(p=>`• ${p.image} ${p.name} (stok: ${p.stock})`).join('\n')}`;
+  },
+  recommend:(query)=>{
+    const prods=MerakiDB.products.getAll();
+    let matches=prods.filter(p=>p.stock>0&&(p.name.toLowerCase().includes(query)||p.tags.some(t=>t.includes(query))||p.category.toLowerCase().includes(query)));
+    if(!matches.length)matches=prods.filter(p=>p.status==='hot'&&p.stock>0).slice(0,2);
+    return`Berdasarkan request kamu, ini yang aku rekomendasiin:\n${matches.slice(0,3).map(p=>`• ${p.image} ${p.name} — ${fmt(p.price)}\n  ${p.description}`).join('\n\n')}\n\nMau langsung order salah satunya?`;
+  },
+  order:`Cara order di Meraki super mudah:\n1. Pilih produk yang kamu suka\n2. Klik "+ Keranjang"\n3. Buka keranjang dan klik Checkout\n4. Isi nama, WhatsApp, dan alamat kamu\n5. Done! Kami akan konfirmasi via WA segera 🎀`,
+  price:`Harga produk kami range dari Rp 22.000 – Rp 125.000. Semua harga sudah termasuk kualitas rework terbaik. Cek koleksi lengkap di halaman utama ya!`,
+  size:`Kami jual preloved jadi ukurannya vary per item. Setiap produk sudah dicleaning dan di-check kondisinya. Kalau mau tanya ukuran spesifik, DM kita di Instagram ya! 💌`,
+  return:`Karena ini preloved fashion, kami tidak menerima return. Tapi setiap item sudah kami cuci, cek kondisi, dan foto dengan jujur. Ada yang kurang jelas soal kondisi item? Tanya dulu sebelum order! 🙏`,
+  care:`Tips merawat preloved:\n• Cuci tangan atau gentle machine wash\n• Hindari bleach\n• Jemur terbalik di tempat teduh\n• Setrika dengan suhu rendah\n• Simpan di tempat bersih dan kering 🌿`,
+  discount:`Kami sesekali punya promo! Follow @merakireworks di Instagram biar nggak ketinggalan. Pelanggan setia juga kadang dapet early access 🎁`,
+  sustainable:`Meraki Reworks percaya bahwa fashion bisa lebih sustainable. Dengan membeli preloved, kamu membantu mengurangi limbah tekstil dan memberi nyawa baru pada pakaian berkualitas ♻️✨`,
+};
+
+function botReply(msg){
+  const m=msg.toLowerCase();
+  if(m.match(/halo|hai|hi|hey|ola|morning|siang|malam/)) return botKnowledge.greet[0];
+  if(m.match(/trend|hot|lagi hits|populer|viral/)) return botKnowledge.trending();
+  if(m.match(/stok|stock|tersedia|ada apa|produk apa/)) return botKnowledge.stock();
+  if(m.match(/order|beli|pesan|cara|checkout/)) return botKnowledge.order;
+  if(m.match(/harga|price|berapa|cost|mahal|murah/)) return botKnowledge.price;
+  if(m.match(/ukuran|size|fit|muat/)) return botKnowledge.size;
+  if(m.match(/return|tukar|refund|balikin/)) return botKnowledge.return;
+  if(m.match(/cuci|rawat|care|wash|setrika/)) return botKnowledge.care;
+  if(m.match(/diskon|promo|sale|voucher|promo/)) return botKnowledge.discount;
+  if(m.match(/sustainable|lingkungan|eco|recycle|preloved|rework/)) return botKnowledge.sustainable;
+  if(m.match(/dress|rok|skirt|gaun/)) return botKnowledge.recommend('dress');
+  if(m.match(/blazer|jaket|jacket|outerwear|coat/)) return botKnowledge.recommend('blazer');
+  if(m.match(/top|atasan|blouse|kemeja/)) return botKnowledge.recommend('tops');
+  if(m.match(/celana|trouser|pants|bottom/)) return botKnowledge.recommend('bottoms');
+  if(m.match(/aksesoris|scarf|acc/)) return botKnowledge.recommend('accessories');
+  if(m.match(/y2k|retro|vintage|90s/)) return botKnowledge.recommend('y2k');
+  if(m.match(/linen|natural|breathable/)) return botKnowledge.recommend('linen');
+  return botKnowledge.recommend(m)||`Hmm, aku belum punya info soal itu 😊 Coba tanya soal produk, trending, ukuran, cara order, atau perawatan pakaian ya! Atau DM kita di Instagram untuk bantuan lebih lanjut 💌`;
+}
+
+function addBotMessage(text){
+  const msgs=document.getElementById('chatMessages');
+  const typing=document.createElement('div');
+  typing.className='msg msg-bot';
+  typing.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(typing);msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typing.remove();
+    const div=document.createElement('div');div.className='msg msg-bot';
+    div.innerHTML=`<div class="msg-bubble">${text.replace(/\n/g,'<br/>')}</div><div class="msg-time">${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</div>`;
+    msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+  },900+Math.random()*600);
+}
+
+function addUserMessage(text){
+  const msgs=document.getElementById('chatMessages');
+  const div=document.createElement('div');div.className='msg msg-user';
+  div.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</div>`;
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function sendChat(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();if(!text)return;
+  input.value='';
+  addUserMessage(text);
+  document.getElementById('chatSuggestions').innerHTML='';
+  setTimeout(()=>addBotMessage(botReply(text)),100);
+}
+
+function sendSuggestion(text){document.getElementById('chatInput').value=text;sendChat();}
+
+function openChat(){
+  chatOpen=true;
+  document.getElementById('chatbotWindow').classList.add('open');
+  if(!document.getElementById('chatMessages').children.length){
+    setTimeout(()=>addBotMessage(botKnowledge.greet[0]),300);
+    setTimeout(()=>{
+      const sg=document.getElementById('chatSuggestions');
+      sg.innerHTML=suggestions.map(s=>`<button class="suggestion" onclick="sendSuggestion('${s}')">${s}</button>`).join('');
+    },1400);
+  }
+}
+function closeChat(){chatOpen=false;document.getElementById('chatbotWindow').classList.remove('open');}
+
+// ── Init ──
+renderProducts();updateCart();
+</script>
+</body>
+</html>
